@@ -1,0 +1,21 @@
+# Binaries
+/bin/
+/dist/
+
+.idea/
+.vscode/
+.DS_Store
+
+.env
+.env.*
+!.env.example
+
+coverage.out
+*.test
+vendor/
+
+# Runtime uploads (keep dirs via .gitkeep)
+uploads/manos/*
+!uploads/manos/.gitkeep
+uploads/resultados/*
+!uploads/resultados/.gitkeep
