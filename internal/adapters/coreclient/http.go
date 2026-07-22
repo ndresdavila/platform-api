@@ -51,14 +51,6 @@ func (c *HTTPClient) Health(ctx context.Context) error {
 	return nil
 }
 
-func (c *HTTPClient) CreateTenant(ctx context.Context, slug, name string) (*ports.Tenant, error) {
-	var out ports.Tenant
-	if err := c.post(ctx, "/v1/tenants", map[string]string{"slug": slug, "name": name}, &out); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
 func (c *HTTPClient) GetTenantBySlug(ctx context.Context, slug string) (*ports.Tenant, error) {
 	var out ports.Tenant
 	if err := c.get(ctx, "/v1/tenants/by-slug/"+slug, &out); err != nil {
@@ -72,10 +64,6 @@ func (c *HTTPClient) tenantPath(id uuid.UUID, suffix string) string {
 func (c *HTTPClient) GetSettings(ctx context.Context, id uuid.UUID) (*ports.TenantSettings, error) {
 	var v ports.TenantSettings
 	return &v, c.get(ctx, c.tenantPath(id, "/settings"), &v)
-}
-func (c *HTTPClient) PutSettings(ctx context.Context, id uuid.UUID, settings ports.TenantSettings) (*ports.TenantSettings, error) {
-	var v ports.TenantSettings
-	return &v, c.method(ctx, http.MethodPut, c.tenantPath(id, "/settings"), settings, &v)
 }
 func (c *HTTPClient) UpsertCustomer(ctx context.Context, id uuid.UUID, in ports.UpsertCustomerInput) (*ports.Customer, error) {
 	var v ports.Customer
@@ -107,10 +95,6 @@ func (c *HTTPClient) ListServices(ctx context.Context, tenantID uuid.UUID) ([]po
 	}
 	return wrap.Services, nil
 }
-func (c *HTTPClient) CreateService(ctx context.Context, tenantID uuid.UUID, service ports.CatalogService) (*ports.CatalogService, error) {
-	var v ports.CatalogService
-	return &v, c.post(ctx, c.tenantPath(tenantID, "/catalog/services"), service, &v)
-}
 
 func (c *HTTPClient) CreateBooking(ctx context.Context, tenantID uuid.UUID, in ports.CreateBookingInput) (*ports.Booking, error) {
 	var out ports.Booking
@@ -140,9 +124,6 @@ func (c *HTTPClient) ListBookingsByCustomer(ctx context.Context, tenantID, custo
 	return wrap.Bookings, nil
 }
 
-func (c *HTTPClient) CancelBooking(ctx context.Context, tenantID, bookingID uuid.UUID) (*ports.Booking, error) {
-	return c.CancelBookingCustomer(ctx, tenantID, bookingID)
-}
 func (c *HTTPClient) GetBooking(ctx context.Context, t, b uuid.UUID) (*ports.Booking, error) {
 	var v ports.Booking
 	return &v, c.get(ctx, c.tenantPath(t, "/bookings/"+b.String()), &v)
@@ -217,10 +198,6 @@ func (c *HTTPClient) ListBankAccounts(ctx context.Context, t uuid.UUID) ([]ports
 	}
 	return v.BankAccounts, nil
 }
-func (c *HTTPClient) CreateBankAccount(ctx context.Context, t uuid.UUID, account ports.BankAccount) (*ports.BankAccount, error) {
-	var v ports.BankAccount
-	return &v, c.post(ctx, c.tenantPath(t, "/bank-accounts"), account, &v)
-}
 func (c *HTTPClient) CreateDesign(ctx context.Context, t uuid.UUID, in ports.CreateDesignInput) (*ports.Design, error) {
 	var v ports.Design
 	return &v, c.post(ctx, c.tenantPath(t, "/designs"), map[string]any{"customerId": in.CustomerID.String(), "prompt": in.Prompt, "photoUrl": in.PhotoURL, "modelUsed": in.ModelUsed}, &v)
@@ -233,10 +210,6 @@ func (c *HTTPClient) ListDesigns(ctx context.Context, t, u uuid.UUID) ([]ports.D
 		return nil, err
 	}
 	return v.Designs, nil
-}
-func (c *HTTPClient) GetDesign(ctx context.Context, t, d uuid.UUID) (*ports.Design, error) {
-	var v ports.Design
-	return &v, c.get(ctx, c.tenantPath(t, "/designs/"+d.String()), &v)
 }
 func (c *HTTPClient) GetDesignQuota(ctx context.Context, t, u uuid.UUID) (*ports.DesignQuota, error) {
 	var v ports.DesignQuota

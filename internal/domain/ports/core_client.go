@@ -11,22 +11,17 @@ import (
 type CoreClient interface {
 	Health(ctx context.Context) error
 
-	CreateTenant(ctx context.Context, slug, name string) (*Tenant, error)
 	GetTenantBySlug(ctx context.Context, slug string) (*Tenant, error)
 	GetSettings(ctx context.Context, tenantID uuid.UUID) (*TenantSettings, error)
-	PutSettings(ctx context.Context, tenantID uuid.UUID, settings TenantSettings) (*TenantSettings, error)
 	UpsertCustomer(ctx context.Context, tenantID uuid.UUID, in UpsertCustomerInput) (*Customer, error)
 	GetCustomerByExternal(ctx context.Context, tenantID uuid.UUID, externalID string) (*Customer, error)
 	GetCustomer(ctx context.Context, tenantID, customerID uuid.UUID) (*Customer, error)
 	UpdateCustomerProfile(ctx context.Context, tenantID, customerID uuid.UUID, in CustomerProfileInput) (*Customer, error)
 	UpsertEmployee(ctx context.Context, tenantID uuid.UUID, in UpsertEmployeeInput) (*Employee, error)
 	ListServices(ctx context.Context, tenantID uuid.UUID) ([]CatalogService, error)
-	CreateService(ctx context.Context, tenantID uuid.UUID, service CatalogService) (*CatalogService, error)
 	GetBooking(ctx context.Context, tenantID, bookingID uuid.UUID) (*Booking, error)
 	CreateBooking(ctx context.Context, tenantID uuid.UUID, in CreateBookingInput) (*Booking, error)
 	ListBookingsByCustomer(ctx context.Context, tenantID, customerID uuid.UUID) ([]Booking, error)
-	// CancelBooking is retained for the small v1 facade.
-	CancelBooking(ctx context.Context, tenantID, bookingID uuid.UUID) (*Booking, error)
 	ListBookingsByRange(ctx context.Context, tenantID uuid.UUID, from, to time.Time) ([]Booking, error)
 	CancelBookingCustomer(ctx context.Context, tenantID, bookingID uuid.UUID) (*Booking, error)
 	CancelBookingStaff(ctx context.Context, tenantID, bookingID uuid.UUID) (*Booking, error)
@@ -37,10 +32,8 @@ type CoreClient interface {
 	MarkPaymentPaid(ctx context.Context, tenantID, paymentID uuid.UUID) (*Payment, error)
 	VoidPayment(ctx context.Context, tenantID, paymentID uuid.UUID) (*Payment, error)
 	ListBankAccounts(ctx context.Context, tenantID uuid.UUID) ([]BankAccount, error)
-	CreateBankAccount(ctx context.Context, tenantID uuid.UUID, account BankAccount) (*BankAccount, error)
 	CreateDesign(ctx context.Context, tenantID uuid.UUID, in CreateDesignInput) (*Design, error)
 	ListDesigns(ctx context.Context, tenantID, customerID uuid.UUID) ([]Design, error)
-	GetDesign(ctx context.Context, tenantID, designID uuid.UUID) (*Design, error)
 	GetDesignQuota(ctx context.Context, tenantID, customerID uuid.UUID) (*DesignQuota, error)
 	CompleteDesign(ctx context.Context, tenantID, designID uuid.UUID, in CompleteDesignInput) (*Design, error)
 	DeleteDesign(ctx context.Context, tenantID, designID uuid.UUID) error

@@ -22,9 +22,9 @@ type Config struct {
 	JWKSURI, MobileClientID, BackendClientID, BackendClientSecret string
 }
 type StaffConfig struct {
-	Issuer               string
-	Aliases              []string
-	JWKSURI, WebClientID string
+	Issuer  string
+	Aliases []string
+	JWKSURI string
 }
 type TokenSet struct {
 	AccessToken  string `json:"access_token"`
@@ -66,7 +66,7 @@ func ClientConfig() Config {
 }
 func Staff() StaffConfig {
 	issuer := normalized(env("KEYCLOAK_STAFF_ISSUER", "http://localhost:8080/realms/nails-staff"))
-	return StaffConfig{issuer, aliases(issuer, os.Getenv("KEYCLOAK_STAFF_ISSUER_ALIASES")), env("KEYCLOAK_STAFF_JWKS_URI", issuer+"/protocol/openid-connect/certs"), env("KEYCLOAK_STAFF_WEB_CLIENT_ID", "nails-staff-web")}
+	return StaffConfig{issuer, aliases(issuer, os.Getenv("KEYCLOAK_STAFF_ISSUER_ALIASES")), env("KEYCLOAK_STAFF_JWKS_URI", issuer+"/protocol/openid-connect/certs")}
 }
 func tokenURL(issuer string) string { return issuer + "/protocol/openid-connect/token" }
 func postForm(ctx context.Context, endpoint string, values url.Values, out any) error {

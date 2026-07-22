@@ -50,10 +50,7 @@ func NewServer(cfg Config) (http.Handler, error) {
 	if err != nil {
 		return nil, fmt.Errorf("resolve default tenant %q: %w", cfg.DefaultTenantSlug, err)
 	}
-	facade := &application.Facade{
-		Core:              core,
-		DefaultTenantSlug: cfg.DefaultTenantSlug,
-	}
+	facade := &application.Facade{Core: core}
 	h := &public.Handler{Facade: facade, Tenant: tenant, UploadDir: cfg.UploadDir}
 	return public.NewRouter(h), nil
 }
