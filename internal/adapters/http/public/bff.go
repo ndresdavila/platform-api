@@ -36,9 +36,29 @@ func bearer(r *http.Request) string {
 	return r.URL.Query().Get("access_token")
 }
 
+// withCORS lets the staff Next.js app (and other browser clients) call this API.
+// Reflects Origin so localhost:3002 and LAN IPs both work in local/dev.
+func withCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		origin := r.Header.Get("Origin")
+		if origin != "" {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+			w.Header().Set("Vary", "Origin")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
+			w.Header().Set("Access-Control-Max-Age", "86400")
+		}
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
 func newBFFRouter(h *Handler) http.Handler {
 	r := chi.NewRouter()
-	r.Use(chimw.RequestID, chimw.RealIP, chimw.Logger, chimw.Recoverer)
+	r.Use(withCORS, chimw.RequestID, chimw.RealIP, chimw.Logger, chimw.Recoverer)
 	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		if err := core(h).Health(r.Context()); err != nil {
 			writeJSON(w, 503, map[string]any{"ok": false, "core": err.Error()})
