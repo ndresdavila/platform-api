@@ -9,9 +9,8 @@ import (
 )
 
 type Handler struct {
-	Facade    *application.Facade
-	Tenant    *ports.Tenant
-	UploadDir string
+	Facade *application.Facade
+	Tenant *ports.Tenant
 }
 
 func NewRouter(h *Handler) http.Handler {

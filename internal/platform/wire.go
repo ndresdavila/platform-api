@@ -15,25 +15,24 @@ type Config struct {
 	HTTPAddr          string
 	CoreBaseURL       string
 	DefaultTenantSlug string
-	UploadDir         string
 }
 
 func LoadConfig() Config {
 	addr := os.Getenv("HTTP_ADDR")
 	if addr == "" {
-		addr = ":8082"
+		addr = ":8092"
 	}
 	core := os.Getenv("CORE_BASE_URL")
 	if core == "" {
-		core = "http://localhost:8083"
+		core = "http://localhost:8093"
 	}
 	return Config{
 		HTTPAddr:          addr,
 		CoreBaseURL:       core,
-		DefaultTenantSlug: env("DEFAULT_TENANT_SLUG", "nails-demo"),
-		UploadDir:         env("UPLOAD_DIR", "./uploads"),
+		DefaultTenantSlug: env("DEFAULT_TENANT_SLUG", "masterview"),
 	}
 }
+
 func env(name, fallback string) string {
 	if v := os.Getenv(name); v != "" {
 		return v
@@ -51,6 +50,6 @@ func NewServer(cfg Config) (http.Handler, error) {
 		return nil, fmt.Errorf("resolve default tenant %q: %w", cfg.DefaultTenantSlug, err)
 	}
 	facade := &application.Facade{Core: core}
-	h := &public.Handler{Facade: facade, Tenant: tenant, UploadDir: cfg.UploadDir}
+	h := &public.Handler{Facade: facade, Tenant: tenant}
 	return public.NewRouter(h), nil
 }
